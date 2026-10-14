@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://fleur-ocean.wittyibis32.chatgpt.site/sitemap.xml
