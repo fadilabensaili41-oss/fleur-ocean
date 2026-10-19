@@ -1,30 +1,5 @@
-const menu=document.querySelector('.menu');const nav=document.querySelector('#navigation');menu.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(open));nav.classList.toggle('open',open)});nav.addEventListener('click',e=>{if(e.target.closest('a')){menu.setAttribute('aria-expanded','false');nav.classList.remove('open')}});document.querySelector('#year').textContent=new Date().getFullYear();document.querySelectorAll('[data-product]').forEach(link=>link.addEventListener('click',()=>{document.querySelector('#sujet').value=link.dataset.product}));const form=document.querySelector('#contact-form');
-if(form)form.addEventListener('submit',async e=>{
-  e.preventDefault();
-  if(!form.reportValidity())return;
-  const button=form.querySelector('button[type=submit]');
-  const status=document.querySelector('#form-status');
-  const idleLabel=button.textContent;
-  button.disabled=true;
-  button.textContent='Envoi en cours…';
-  status.textContent='Transmission sécurisée de votre message…';
-  try{
-    const response=await fetch('https://formsubmit.co/ajax/fleurocean63@gmail.com',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Accept':'application/json'},
-      body:JSON.stringify(Object.fromEntries(new FormData(form).entries()))
-    });
-    const result=await response.json();
-    if(!response.ok||!(result.success===true||result.success==='true'))throw new Error(result.message||'Le service d’envoi ne confirme pas la transmission.');
-    status.textContent='Merci, votre message a bien été transmis à Fleur Océan.';
-    form.reset();
-  }catch(error){
-    status.textContent='L’envoi n’a pas abouti. Réessayez dans quelques instants ou écrivez-nous à fleurocean63@gmail.com.';
-  }finally{
-    button.disabled=false;
-    button.textContent=idleLabel;
-  }
-});
+const menu=document.querySelector('.menu');const nav=document.querySelector('#navigation');menu.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(open));nav.classList.toggle('open',open)});nav.addEventListener('click',e=>{if(e.target.closest('a')){menu.setAttribute('aria-expanded','false');nav.classList.remove('open')}});document.querySelector('#year').textContent=new Date().getFullYear();document.querySelectorAll('[data-product]').forEach(link=>link.addEventListener('click',()=>{document.querySelector('#sujet').value=link.dataset.product}));const formStatus=document.querySelector('#form-status');
+if(formStatus&&new URLSearchParams(location.search).get('envoi')==='confirme')formStatus.textContent='Votre demande a été prise en compte. Si c’est votre premier envoi, l’activation de l’adresse est nécessaire avant sa livraison.';
 
 // La houle est pilotée en JavaScript via la Web Animations API.
 // Les transformations restent sur le compositeur, sans recalcul de la mise en page.
