@@ -13,4 +13,4 @@ Le formulaire prépare un brouillon téléchargeable. Il ne transmet pas de mess
 
 Aperçu du site : https://fleur-ocean.wittyibis32.chatgpt.site
 
-Ce dépôt GitHub privé contient les sources du site. L’aperçu reste hébergé séparément.
+Ce dépôt GitHub public contient les sources du site. L’aperçu reste hébergé séparément.
