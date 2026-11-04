@@ -1,6 +1,22 @@
 const menu=document.querySelector('.menu');const nav=document.querySelector('#navigation');menu.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(open));nav.classList.toggle('open',open)});nav.addEventListener('click',e=>{if(e.target.closest('a')){menu.setAttribute('aria-expanded','false');nav.classList.remove('open')}});document.querySelector('#year').textContent=new Date().getFullYear();document.querySelectorAll('[data-product]').forEach(link=>link.addEventListener('click',()=>{document.querySelector('#sujet').value=link.dataset.product}));const formStatus=document.querySelector('#form-status');
 if(formStatus&&new URLSearchParams(location.search).get('envoi')==='confirme')formStatus.textContent='Votre demande a été prise en compte. Si c’est votre premier envoi, l’activation de l’adresse est nécessaire avant sa livraison.';
 
+// Afficher immédiatement une confirmation d'action avant la navigation vers FormSubmit.
+const contactForm=document.querySelector('#contact-form');
+if(contactForm){
+  contactForm.addEventListener('submit',()=>{
+    const status=document.querySelector('#form-status');
+    const submitButton=contactForm.querySelector('button[type="submit"]');
+    if(status)status.textContent='Envoi en cours… Vous allez être redirigé vers le service de messagerie.';
+    if(submitButton)submitButton.textContent='Envoi en cours…';
+    // Ne pas bloquer la soumission native du formulaire.
+  });
+  contactForm.addEventListener('invalid',()=>{
+    const status=document.querySelector('#form-status');
+    if(status)status.textContent='Veuillez remplir les champs obligatoires avant l’envoi.';
+  },true);
+}
+
 // La houle est pilotée en JavaScript via la Web Animations API.
 // Les transformations restent sur le compositeur, sans recalcul de la mise en page.
 (() => {
