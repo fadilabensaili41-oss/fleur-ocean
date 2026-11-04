@@ -22,8 +22,8 @@
 /* Séparation explicite des deux formules de vente */
 .oyster-offers{display:grid;grid-template-columns:1fr;gap:11px;margin-top:16px}.oyster-unit,.oyster-offers .oyster-bourriche{padding:14px 16px;border-radius:12px;border:1px solid #8cae9e66;margin:0;background:#f8f8f1a8}.oyster-offers .oyster-bourriche{background:#e8f0e6;border:1px solid #84a99c}.oyster-offer-heading{display:block;font-size:11px;font-weight:600;line-height:1.5;color:#315f5b;margin-bottom:7px}.oyster-unit .oyster-price{font-size:27px;margin-bottom:8px}.oyster-bourriche-prices strong{font-size:29px}.oyster-bourriche-prices del{font-size:16px}.oyster-card .oyster-offers{grid-column:auto}.oyster-special .oyster-bourriche{background:#f0e7d3;border-color:#c9b480}
 
-/* Bouton Commander : pastille pleine, lisible, placée à droite de chaque offre. */
-.oyster-card{grid-template-columns:42px minmax(0,1fr) auto;align-items:start;}
-.oyster-card>a.oyster-order-button{grid-column:3;grid-row:1;align-self:end;justify-self:end;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:auto;min-width:116px;height:44px;padding:0 19px;border:0;border-radius:999px;background:#17494a;color:#fff;font-size:14px;font-weight:600;line-height:1;text-decoration:none;white-space:nowrap;box-shadow:0 3px 9px #103b401c;transition:background .2s,transform .2s;}
+/* Action de commande : sous les offres, sans chevauchement des tarifs. */
+.oyster-card{grid-template-columns:42px minmax(0,1fr);align-items:start;align-content:start;}
+.oyster-card>a.oyster-order-button{grid-column:1/-1;grid-row:auto;justify-self:end;align-self:end;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:auto;min-width:136px;min-height:43px;margin-top:7px;padding:11px 22px;border:0;border-radius:999px;background:#17494a;color:#fff;font-size:14px;font-weight:600;line-height:1.2;text-align:center;text-decoration:none;white-space:nowrap;box-shadow:0 3px 9px #103b401c;transition:background .2s,transform .2s;}
 .oyster-card>a.oyster-order-button:hover,.oyster-card>a.oyster-order-button:focus-visible{background:#276e69;color:#fff;transform:translateY(-1px);}
-@media(max-width:760px){.oyster-card{grid-template-columns:42px minmax(0,1fr);}.oyster-card>a.oyster-order-button{grid-column:2;grid-row:auto;justify-self:start;margin-top:8px;}}
+@media(max-width:620px){.oyster-card>a.oyster-order-button{justify-self:stretch;}}
