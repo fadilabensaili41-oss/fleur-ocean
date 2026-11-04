@@ -1,20 +1,42 @@
 const menu=document.querySelector('.menu');const nav=document.querySelector('#navigation');menu.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(open));nav.classList.toggle('open',open)});nav.addEventListener('click',e=>{if(e.target.closest('a')){menu.setAttribute('aria-expanded','false');nav.classList.remove('open')}});document.querySelector('#year').textContent=new Date().getFullYear();document.querySelectorAll('[data-product]').forEach(link=>link.addEventListener('click',()=>{document.querySelector('#sujet').value=link.dataset.product}));const formStatus=document.querySelector('#form-status');
 if(formStatus&&new URLSearchParams(location.search).get('envoi')==='confirme')formStatus.textContent='Votre demande a été prise en compte. Si c’est votre premier envoi, l’activation de l’adresse est nécessaire avant sa livraison.';
 
-// Afficher immédiatement une confirmation d'action avant la navigation vers FormSubmit.
+// Soumission AJAX FormSubmit avec délai maximal et solution de secours par e-mail.
 const contactForm=document.querySelector('#contact-form');
 if(contactForm){
-  contactForm.addEventListener('submit',()=>{
-    const status=document.querySelector('#form-status');
-    const submitButton=contactForm.querySelector('button[type="submit"]');
-    if(status)status.textContent='Envoi en cours… Vous allez être redirigé vers le service de messagerie.';
-    if(submitButton)submitButton.textContent='Envoi en cours…';
-    // Ne pas bloquer la soumission native du formulaire.
+  const status=document.querySelector('#form-status');
+  const submitButton=contactForm.querySelector('button[type="submit"]');
+  const originalLabel=submitButton?.textContent;
+  contactForm.addEventListener('submit',async event=>{
+    event.preventDefault();
+    if(!contactForm.reportValidity())return;
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),12000);
+    if(submitButton){submitButton.disabled=true;submitButton.textContent='Envoi en cours…';}
+    if(status)status.textContent='Transmission de votre demande en cours…';
+    try{
+      const response=await fetch('https://formsubmit.co/ajax/fleurocean63@gmail.com',{
+        method:'POST',body:new FormData(contactForm),headers:{Accept:'application/json'},signal:controller.signal
+      });
+      if(!response.ok)throw new Error('Réponse du service : '+response.status);
+      const data=await response.json();
+      if(data.success!==true&&data.success!=='true')throw new Error(data.message||'Envoi non confirmé');
+      if(status)status.textContent='Votre demande a été transmise au service de messagerie. Vérifiez la réception du message.';
+      contactForm.reset();
+    }catch(error){
+      if(status){
+        status.replaceChildren();
+        status.append('L’envoi automatique n’a pas abouti. Vous pouvez envoyer votre demande directement par e-mail : ');
+        const link=document.createElement('a');
+        link.href='mailto:fleurocean63@gmail.com?subject='+encodeURIComponent('Demande Fleur Océan — '+contactForm.elements.sujet.value)+'&body='+encodeURIComponent('Nom : '+contactForm.elements.nom.value+'\\nE-mail : '+contactForm.elements.email.value+'\\nDemande : '+contactForm.elements.sujet.value+'\\n\\n'+contactForm.elements.message.value);
+        link.textContent='Ouvrir mon application e-mail';
+        status.append(link);
+      }
+    }finally{
+      clearTimeout(timeout);
+      if(submitButton){submitButton.disabled=false;submitButton.textContent=originalLabel;}
+    }
   });
-  contactForm.addEventListener('invalid',()=>{
-    const status=document.querySelector('#form-status');
-    if(status)status.textContent='Veuillez remplir les champs obligatoires avant l’envoi.';
-  },true);
 }
 
 // La houle est pilotée en JavaScript via la Web Animations API.
