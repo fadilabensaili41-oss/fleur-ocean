@@ -1,9 +1,34 @@
-const menu=document.querySelector('.menu');const nav=document.querySelector('#navigation');menu.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(open));nav.classList.toggle('open',open)});nav.addEventListener('click',e=>{if(e.target.closest('a')){menu.setAttribute('aria-expanded','false');nav.classList.remove('open')}});document.querySelector('#year').textContent=new Date().getFullYear();document.querySelectorAll('[data-product]').forEach(link=>link.addEventListener('click',()=>{document.querySelector('#sujet').value=link.dataset.product}));const formStatus=document.querySelector('#form-status');
-if(formStatus&&new URLSearchParams(location.search).get('envoi')==='confirme')formStatus.textContent='Votre demande a été prise en compte. Si c’est votre premier envoi, l’activation de l’adresse est nécessaire avant sa livraison.';
-
-// Le formulaire de contact utilise l'envoi HTML natif vers FormSubmit.
-// Ne pas intercepter submit : la redirection du prestataire permet de voir
-// les erreurs d'activation ou de livraison au lieu d'un faux succès AJAX.
+const menu=document.querySelector('.menu');const nav=document.querySelector('#navigation');menu.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(open));nav.classList.toggle('open',open)});nav.addEventListener('click',e=>{if(e.target.closest('a')){menu.setAttribute('aria-expanded','false');nav.classList.remove('open')}});document.querySelector('#year').textContent=new Date().getFullYear();document.querySelectorAll('[data-product]').forEach(link=>link.addEventListener('click',()=>{document.querySelector('#sujet').value=link.dataset.product}));const contactForm=document.querySelector('#contact-form');
+if(contactForm){
+  const formStatus=document.querySelector('#form-status');
+  const submitButton=contactForm.querySelector('button[type="submit"]');
+  const buttonLabel=submitButton?.textContent;
+  contactForm.addEventListener('submit',async event=>{
+    event.preventDefault();
+    if(!contactForm.reportValidity())return;
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),15000);
+    if(submitButton){submitButton.disabled=true;submitButton.textContent='Envoi en cours…';}
+    if(formStatus)formStatus.textContent='Transmission à Web3Forms en cours…';
+    try{
+      const response=await fetch(contactForm.action,{
+        method:'POST',
+        body:new FormData(contactForm),
+        headers:{Accept:'application/json'},
+        signal:controller.signal
+      });
+      const result=await response.json();
+      if(!response.ok||result.success!==true)throw new Error(result.message||'Le service n’a pas confirmé l’envoi.');
+      if(formStatus)formStatus.textContent='Message envoyé avec succès. Merci pour votre demande !';
+      contactForm.reset();
+    }catch(error){
+      if(formStatus)formStatus.textContent='Envoi impossible pour le moment. Réessayez ou contactez-nous directement à fleurocean63@gmail.com. '+(error.name==='AbortError'?'Le service ne répond pas.':'');
+    }finally{
+      clearTimeout(timeout);
+      if(submitButton){submitButton.disabled=false;submitButton.textContent=buttonLabel;}
+    }
+  });
+}
 
 // La houle est pilotée en JavaScript via la Web Animations API.
 // Les transformations restent sur le compositeur, sans recalcul de la mise en page.
